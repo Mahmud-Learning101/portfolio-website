@@ -20,25 +20,32 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Sanitize filename and create unique timestamp suffix
     const originalName = file.name || 'upload';
     const ext = path.extname(originalName) || '.jpg';
-    const cleanBaseName = path.basename(originalName, ext).replace(/[^a-zA-Z0-9_-]/g, '_');
-    const filename = `${cleanBaseName}_${Date.now()}${ext}`;
+    const mimeType = file.type || (ext === '.pdf' ? 'application/pdf' : 'image/jpeg');
 
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+    // 1. Attempt local filesystem save (Works during local development: npm run dev)
+    try {
+      const cleanBaseName = path.basename(originalName, ext).replace(/[^a-zA-Z0-9_-]/g, '_');
+      const filename = `${cleanBaseName}_${Date.now()}${ext}`;
+      const uploadDir = path.join(process.cwd(), 'public', 'uploads');
 
-    // Ensure upload directory exists
-    await mkdir(uploadDir, { recursive: true });
+      await mkdir(uploadDir, { recursive: true });
+      const filePath = path.join(uploadDir, filename);
+      await writeFile(filePath, buffer);
 
-    const filePath = path.join(uploadDir, filename);
-    await writeFile(filePath, buffer);
+      return NextResponse.json({ success: true, url: `/uploads/${filename}` });
+    } catch (fsError: unknown) {
+      // 2. Fallback for Serverless / Vercel (Read-only file system: EROFS)
+      // Convert buffer directly into a Data URI so uploads work instantly on Vercel
+      const base64String = buffer.toString('base64');
+      const dataUrl = `data:${mimeType};base64,${base64String}`;
 
-    const publicUrl = `/uploads/${filename}`;
-
-    return NextResponse.json({ success: true, url: publicUrl });
+      return NextResponse.json({ success: true, url: dataUrl });
+    }
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : 'Upload failed';
     return NextResponse.json({ success: false, error: msg }, { status: 500 });
   }
 }
+

@@ -57,7 +57,7 @@ export default function FileUploadInput({
     }
   };
 
-  const isImage = value && (value.match(/\.(jpeg|jpg|gif|png|webp|svg)/i) || value.startsWith('/uploads/'));
+  const isImage = value && (value.match(/\.(jpeg|jpg|gif|png|webp|svg)/i) || value.startsWith('/uploads/') || value.startsWith('data:image/') || value.startsWith('http'));
   const isPdf = value && value.endsWith('.pdf');
 
   return (
