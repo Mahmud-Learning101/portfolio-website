@@ -41,14 +41,22 @@ export default function AdminProfilePage() {
         body: JSON.stringify(profile),
       });
 
-      const json = await res.json();
+      const responseText = await res.text();
+      let json: { success?: boolean; error?: string } = {};
+      try {
+        json = JSON.parse(responseText);
+      } catch {
+        throw new Error(res.status === 413 ? 'Payload size too large (max serverless limit exceeded)' : `Server error code ${res.status}`);
+      }
+
       if (res.ok && json.success) {
         setMsg({ type: 'success', text: 'Profile & Global Settings updated successfully!' });
       } else {
         setMsg({ type: 'error', text: json.error || 'Update failed' });
       }
-    } catch (err) {
-      setMsg({ type: 'error', text: 'Network error occurred' });
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : 'Save failed due to network error';
+      setMsg({ type: 'error', text: errorMsg });
     } finally {
       setSaving(false);
     }

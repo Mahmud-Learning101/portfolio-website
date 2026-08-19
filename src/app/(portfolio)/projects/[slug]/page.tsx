@@ -57,6 +57,14 @@ export default async function CaseStudyPage({ params }: { params: { slug: string
         </div>
       </div>
 
+      {/* Cover Image Banner */}
+      {project.coverImage ? (
+        <div className="relative w-full h-64 sm:h-96 rounded-2xl overflow-hidden bg-slate-900 border border-white/10 shadow-2xl">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={project.coverImage} alt={project.title} className="w-full h-full object-cover" />
+        </div>
+      ) : null}
+
       {/* Metrics Header */}
       {project.metrics && project.metrics.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

@@ -26,9 +26,16 @@ export default function TestimonialsCarousel({ testimonials }: { testimonials: I
           </div>
 
           <div className="pt-4 border-t border-white/10 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#0066FF] to-[#00F0FF] flex items-center justify-center text-white font-bold text-sm">
-              {item.clientName.charAt(0)}
-            </div>
+            {item.avatarUrl ? (
+              <div className="w-10 h-10 rounded-full overflow-hidden border border-white/20 shrink-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={item.avatarUrl} alt={item.clientName} className="w-full h-full object-cover" />
+              </div>
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#0066FF] to-[#00F0FF] flex items-center justify-center text-white font-bold text-sm shrink-0">
+                {item.clientName.charAt(0)}
+              </div>
+            )}
             <div>
               <div className="text-sm font-bold text-white">{item.clientName}</div>
               <div className="text-xs text-slate-400">{item.clientRole}</div>

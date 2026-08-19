@@ -113,15 +113,23 @@ export default function ProjectFormModal({
         body: JSON.stringify(formData),
       });
 
-      const json = await res.json();
+      const responseText = await res.text();
+      let json: { success?: boolean; error?: string } = {};
+      try {
+        json = JSON.parse(responseText);
+      } catch {
+        throw new Error(res.status === 413 ? 'Payload size too large' : `Server error code ${res.status}`);
+      }
+
       if (res.ok && json.success) {
         onSuccess();
         onClose();
       } else {
         setError(json.error || 'Failed to save project');
       }
-    } catch (err) {
-      setError('Network error occurred');
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : 'Save failed due to network error';
+      setError(errorMsg);
     } finally {
       setSaving(false);
     }

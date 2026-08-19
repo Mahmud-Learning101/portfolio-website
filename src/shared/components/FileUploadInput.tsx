@@ -13,7 +13,7 @@ interface FileUploadInputProps {
 }
 
 // Helper to compress image files before sending to serverless endpoint
-const compressImage = (file: File, maxDimension = 1600, quality = 0.82): Promise<Blob> => {
+const compressImage = (file: File, maxDimension = 1200, quality = 0.78): Promise<Blob> => {
   return new Promise((resolve) => {
     if (!file.type.startsWith('image/') || file.type.includes('svg')) {
       return resolve(file);
@@ -53,6 +53,7 @@ const compressImage = (file: File, maxDimension = 1600, quality = 0.82): Promise
     reader.readAsDataURL(file);
   });
 };
+
 
 export default function FileUploadInput({
   label,

@@ -10,6 +10,13 @@ export default function ProjectCard({ project }: { project: IProject }) {
   return (
     <GlassCard className="flex flex-col justify-between h-full space-y-6">
       <div className="space-y-4">
+        {project.coverImage ? (
+          <div className="relative w-full h-44 rounded-xl overflow-hidden bg-slate-900 border border-white/10">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={project.coverImage} alt={project.title} className="w-full h-full object-cover" />
+          </div>
+        ) : null}
+
         {/* Category Pill */}
         <div className="flex items-center justify-between">
           <span className="px-3 py-1 text-xs font-mono font-medium rounded-full bg-[#0066FF]/20 text-[#00F0FF] border border-[#0066FF]/40">

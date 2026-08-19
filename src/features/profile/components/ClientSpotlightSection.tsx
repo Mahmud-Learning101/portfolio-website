@@ -113,13 +113,11 @@ export default function ClientSpotlightSection({ profile }: { profile: IProfileC
                 
                 {/* Image Container */}
                 <div className="relative rounded-2xl overflow-hidden aspect-[4/5] w-full bg-slate-900">
-                  <Image
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src={imageSrc}
                     alt={profile.fullName || 'Client Portrait'}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    priority
-                    className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                    className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                   />
                   
                   {/* Gradient Overlay at bottom of image for badge legibility */}

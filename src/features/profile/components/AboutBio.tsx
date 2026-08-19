@@ -21,11 +21,11 @@ export default function AboutBio({ profile }: { profile: IProfileConfig }) {
             <div className="relative w-28 h-28 mx-auto lg:mx-0 rounded-full bg-gradient-to-tr from-[#0066FF] to-[#00F0FF] p-1 shadow-[0_0_30px_rgba(0,102,255,0.4)] overflow-hidden">
               {profile.avatarUrl ? (
                 <div className="relative w-full h-full rounded-full overflow-hidden">
-                  <Image
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src={profile.avatarUrl}
                     alt={profile.fullName || 'Client Avatar'}
-                    fill
-                    className="object-cover object-top"
+                    className="w-full h-full object-cover object-top"
                   />
                 </div>
               ) : (
