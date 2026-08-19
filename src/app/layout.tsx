@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: "S. M. Mahmud Bin Murad | Marketing & Content Strategist | Project Manager",
   description:
