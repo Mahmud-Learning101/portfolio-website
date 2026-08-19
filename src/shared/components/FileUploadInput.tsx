@@ -12,6 +12,48 @@ interface FileUploadInputProps {
   helperText?: string;
 }
 
+// Helper to compress image files before sending to serverless endpoint
+const compressImage = (file: File, maxDimension = 1600, quality = 0.82): Promise<Blob> => {
+  return new Promise((resolve) => {
+    if (!file.type.startsWith('image/') || file.type.includes('svg')) {
+      return resolve(file);
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxDimension || height > maxDimension) {
+          if (width > height) {
+            height = Math.round((height * maxDimension) / width);
+            width = maxDimension;
+          } else {
+            width = Math.round((width * maxDimension) / height);
+            height = maxDimension;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return resolve(file);
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            resolve(blob || file);
+          },
+          'image/jpeg',
+          quality
+        );
+      };
+      img.onerror = () => resolve(file);
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = () => resolve(file);
+    reader.readAsDataURL(file);
+  });
+};
+
 export default function FileUploadInput({
   label,
   value,
@@ -26,32 +68,59 @@ export default function FileUploadInput({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const rawFile = e.target.files?.[0];
+    if (!rawFile) return;
 
     setUploading(true);
     setError(null);
     setSuccess(false);
 
     try {
+      // 1. Auto-compress images to prevent Vercel 4.5MB serverless payload limit
+      let processedFile: File | Blob = rawFile;
+      if (rawFile.type.startsWith('image/')) {
+        processedFile = await compressImage(rawFile);
+      }
+
+      // Check compressed file size
+      if (processedFile.size > 4 * 1024 * 1024) {
+        setError('File size is too large (max 4MB). Please pick a smaller image or PDF.');
+        setUploading(false);
+        return;
+      }
+
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', processedFile, rawFile.name);
 
       const res = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       });
 
-      const json = await res.json();
-      if (res.ok && json.success) {
+      const responseText = await res.text();
+      let json: { success?: boolean; url?: string; error?: string } = {};
+      try {
+        json = JSON.parse(responseText);
+      } catch {
+        if (res.status === 413) {
+          throw new Error('File exceeds Vercel 4.5MB upload limit.');
+        } else if (res.status === 401) {
+          throw new Error('Admin session expired. Please log in again.');
+        } else {
+          throw new Error(`Server returned error code ${res.status}`);
+        }
+      }
+
+      if (res.ok && json.success && json.url) {
         onChange(json.url);
         setSuccess(true);
         setTimeout(() => setSuccess(false), 3000);
       } else {
         setError(json.error || 'Upload failed');
       }
-    } catch (err) {
-      setError('Network error occurred during upload');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Network error occurred during upload';
+      setError(msg);
     } finally {
       setUploading(false);
     }
