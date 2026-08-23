@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getExperiences } from '@/features/experience/use-cases/getExperiences';
 import { ExperienceSchema } from '@/features/experience/domain/experience.schema';

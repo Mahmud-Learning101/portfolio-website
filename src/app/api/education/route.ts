@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getEducations } from '@/features/education/use-cases/getEducations';
 import { EducationSchema } from '@/features/education/domain/education.schema';

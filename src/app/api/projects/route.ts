@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getProjects } from '@/features/projects/use-cases/getProjects';
 import { ProjectSchema } from '@/features/projects/domain/project.schema';

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { ContactMessageSchema } from '@/features/contact/domain/contact.schema';
 import { ContactMessageModel } from '@/features/contact/data/contact.model';

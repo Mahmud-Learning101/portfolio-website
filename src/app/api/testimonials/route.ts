@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getTestimonials } from '@/features/testimonials/use-cases/getTestimonials';
 import { TestimonialSchema } from '@/features/testimonials/domain/testimonial.schema';

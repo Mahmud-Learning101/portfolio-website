@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getProfileConfig } from '@/features/profile/use-cases/getProfileConfig';
 import { ProfileConfigSchema } from '@/features/profile/domain/profile.schema';
