@@ -31,6 +31,7 @@ export default function AdminSidebar() {
   const router = useRouter();
 
   const handleLogout = async () => {
+    sessionStorage.removeItem('admin_session_active');
     await fetch('/api/auth/logout', { method: 'POST' });
     router.push('/admin/login');
     router.refresh();

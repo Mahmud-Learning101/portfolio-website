@@ -27,6 +27,15 @@ export default function AdminLoginPage() {
     },
   });
 
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const active = sessionStorage.getItem('admin_session_active');
+      if (!active) {
+        fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+      }
+    }
+  }, []);
+
   const onSubmit = async (data: AdminCredentialsInput) => {
     setLoading(true);
     setErrorMsg('');
@@ -40,6 +49,7 @@ export default function AdminLoginPage() {
 
       const json = await res.json();
       if (res.ok && json.success) {
+        sessionStorage.setItem('admin_session_active', 'true');
         router.push('/admin/dashboard');
         router.refresh();
       } else {

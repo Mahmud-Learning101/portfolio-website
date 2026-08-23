@@ -3,6 +3,7 @@
 import React from 'react';
 import { usePathname } from 'next/navigation';
 import AdminSidebar from '@/features/admin/components/AdminSidebar';
+import AdminAuthGuard from '@/features/auth/components/AdminAuthGuard';
 
 export default function AdminLayout({
   children,
@@ -17,9 +18,11 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[#070B19] flex text-slate-100">
-      <AdminSidebar />
-      <main className="flex-1 p-6 md:p-8 overflow-y-auto max-w-7xl mx-auto">{children}</main>
-    </div>
+    <AdminAuthGuard>
+      <div className="min-h-screen bg-[#070B19] flex text-slate-100">
+        <AdminSidebar />
+        <main className="flex-1 p-6 md:p-8 overflow-y-auto max-w-7xl mx-auto">{children}</main>
+      </div>
+    </AdminAuthGuard>
   );
 }
